@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # todo26 — Fullstack Todo App
 
 A production-shaped todo application with a React + TypeScript frontend, an Express + TypeScript
@@ -203,3 +204,6 @@ erDiagram
 
 Set a strong `JWT_SECRET` before deploying — the server refuses to start in production with the
 development default.
+=======
+# todo-fullstack
+>>>>>>> 5b1e59f6b0b23231be59548dcf6fc25c5cccda2f
