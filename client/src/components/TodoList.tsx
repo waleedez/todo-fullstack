@@ -14,18 +14,19 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useMemo } from 'react';
-import type { Todo, TodoPatch } from '../types';
+import type { Tag, Todo, TodoPatch } from '../types';
 import { TodoItem } from './TodoItem';
 
 interface TodoListProps {
   todos: Todo[];
+  tags: Tag[];
   canReorder: boolean;
   onUpdate: (id: string, patch: TodoPatch) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
   onReorder: (orderedIds: string[]) => Promise<unknown>;
 }
 
-export function TodoList({ todos, canReorder, onUpdate, onDelete, onReorder }: TodoListProps) {
+export function TodoList({ todos, tags, canReorder, onUpdate, onDelete, onReorder }: TodoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -60,6 +61,7 @@ export function TodoList({ todos, canReorder, onUpdate, onDelete, onReorder }: T
             <TodoItem
               key={todo.id}
               todo={todo}
+              tags={tags}
               draggable={canReorder}
               onUpdate={onUpdate}
               onDelete={onDelete}

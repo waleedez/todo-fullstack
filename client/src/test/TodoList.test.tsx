@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoList } from '../components/TodoList';
-import type { Todo } from '../types';
+import type { Tag, Todo } from '../types';
+
+const allTags: Tag[] = [
+  { id: 't1', name: 'Work', color: '#ef4444' },
+  { id: 't2', name: 'Home', color: '#10b981' },
+];
 
 function makeTodo(overrides: Partial<Todo> = {}): Todo {
   return {
@@ -24,6 +29,7 @@ describe('TodoList', () => {
   it('shows an empty state when there are no todos', () => {
     render(
       <TodoList
+        tags={allTags}
         todos={[]}
         canReorder
         onUpdate={vi.fn()}
@@ -38,6 +44,7 @@ describe('TodoList', () => {
   it('renders todos with their metadata', () => {
     render(
       <TodoList
+        tags={allTags}
         todos={[
           makeTodo({
             title: 'Ship it',
@@ -65,6 +72,7 @@ describe('TodoList', () => {
 
     render(
       <TodoList
+        tags={allTags}
         todos={[makeTodo({ title: 'Toggle me' })]}
         canReorder
         onUpdate={onUpdate}
@@ -86,6 +94,7 @@ describe('TodoList', () => {
 
     render(
       <TodoList
+        tags={allTags}
         todos={[makeTodo({ title: 'Remove me' })]}
         canReorder
         onUpdate={vi.fn()}
@@ -102,6 +111,7 @@ describe('TodoList', () => {
   it('hides the drag handle when reordering is disabled', () => {
     render(
       <TodoList
+        tags={allTags}
         todos={[makeTodo({ title: 'Fixed' })]}
         canReorder={false}
         onUpdate={vi.fn()}
@@ -111,5 +121,65 @@ describe('TodoList', () => {
     );
 
     expect(screen.queryByRole('button', { name: 'Reorder Fixed' })).not.toBeInTheDocument();
+  });
+
+  it('edits a todo and can change its tags', async () => {
+    const user = userEvent.setup();
+    const onUpdate = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TodoList
+        tags={allTags}
+        todos={[
+          makeTodo({
+            title: 'Tag me',
+            tags: [{ id: 't1', name: 'Work', color: '#ef4444' }],
+          }),
+        ]}
+        canReorder
+        onUpdate={onUpdate}
+        onDelete={vi.fn()}
+        onReorder={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Edit Tag me' }));
+
+    const work = screen.getByRole('button', { name: 'Work' });
+    const home = screen.getByRole('button', { name: 'Home' });
+    expect(work).toHaveAttribute('aria-pressed', 'true');
+    expect(home).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(work);
+    await user.click(home);
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onUpdate).toHaveBeenCalledWith('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', {
+      title: 'Tag me',
+      notes: null,
+      priority: 'medium',
+      dueDate: null,
+      tagIds: ['t2'],
+    });
+  });
+
+  it('offers every tag in the edit form, not just the assigned ones', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <TodoList
+        tags={allTags}
+        todos={[makeTodo({ title: 'Untagged' })]}
+        canReorder
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+        onReorder={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Edit Untagged' }));
+
+    expect(screen.getByRole('button', { name: 'Work' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
   });
 });

@@ -15,6 +15,7 @@ interface TodoFormProps {
   onCancel?: () => void;
   initial?: TodoFormValues;
   submitLabel?: string;
+  compact?: boolean;
 }
 
 export function TodoForm({
@@ -23,6 +24,7 @@ export function TodoForm({
   onCancel,
   initial,
   submitLabel = 'Add todo',
+  compact = false,
 }: TodoFormProps) {
   const [title, setTitle] = useState(initial?.title ?? '');
   const [notes, setNotes] = useState(initial?.notes ?? '');
@@ -70,7 +72,7 @@ export function TodoForm({
   }
 
   return (
-    <form className="todo-form" onSubmit={handleSubmit}>
+    <form className={`todo-form${compact ? ' todo-form--compact' : ''}`} onSubmit={handleSubmit}>
       <input
         className="field__input todo-form__title"
         type="text"
@@ -114,7 +116,7 @@ export function TodoForm({
         </label>
       </div>
 
-      {tags.length > 0 && (
+      {tags.length > 0 ? (
         <fieldset className="todo-form__tags">
           <legend className="field__label">Tags</legend>
           <div className="tag-picker">
@@ -132,6 +134,10 @@ export function TodoForm({
             ))}
           </div>
         </fieldset>
+      ) : (
+        <p className="muted todo-form__tags-empty">
+          No tags yet — add one from the Tags panel to label this todo.
+        </p>
       )}
 
       {error && (

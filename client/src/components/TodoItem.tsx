@@ -1,11 +1,12 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
-import type { Todo, TodoPatch } from '../types';
+import type { Tag, Todo, TodoPatch } from '../types';
 import { TodoForm, type TodoFormValues } from './TodoForm';
 
 interface TodoItemProps {
   todo: Todo;
+  tags: Tag[];
   draggable: boolean;
   onUpdate: (id: string, patch: TodoPatch) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
@@ -27,7 +28,7 @@ function formatDueDate(dueDate: string): { label: string; state: 'overdue' | 'to
   return { label, state: 'future' };
 }
 
-export function TodoItem({ todo, draggable, onUpdate, onDelete }: TodoItemProps) {
+export function TodoItem({ todo, tags, draggable, onUpdate, onDelete }: TodoItemProps) {
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -89,7 +90,8 @@ export function TodoItem({ todo, draggable, onUpdate, onDelete }: TodoItemProps)
       {editing ? (
         <div className="todo__edit">
           <TodoForm
-            tags={[]}
+            tags={tags}
+            compact
             initial={{
               title: todo.title,
               notes: todo.notes,

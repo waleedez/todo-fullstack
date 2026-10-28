@@ -168,6 +168,7 @@ function TodoApp({ email, onLogout, theme, onToggleTheme }: TodoAppProps) {
             ) : (
               <TodoList
                 todos={visibleTodos}
+                tags={tags}
                 canReorder={canReorder}
                 onUpdate={updateTodo}
                 onDelete={deleteTodo}

@@ -306,6 +306,27 @@ h3 {
   margin: 0;
 }
 
+.todo-form__tags-empty {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.todo-form--compact {
+  gap: 0.5rem;
+}
+
+.todo-form--compact .todo-form__notes {
+  min-height: 44px;
+}
+
+.todo-form--compact .todo-form__tags {
+  padding: 0.45rem 0.6rem 0.6rem;
+}
+
+.todo-form--compact .todo-form__actions {
+  justify-content: flex-end;
+}
+
 .todo-form__actions {
   display: flex;
   gap: 0.5rem;
